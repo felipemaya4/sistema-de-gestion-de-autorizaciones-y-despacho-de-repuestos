@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Jefe - Sistema de Repuestos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="boss-main-view" class="view">
+        <header>
+            <h1>Panel de Autorización</h1>
+            <div class="user-info">
+                <span>Usuario: <span id="user-name">[Nombre Jefe]</span></span>
+                <button id="logout-btn">Salir</button>
+            </div>
+        </header>
+
+        <section class="search-container">
+             <h2>Solicitudes Pendientes <span id="pending-count">(0)</span></h2>
+            <input type="search" id="search-bar" placeholder="Buscar por técnico o Nº de OM...">
+        </section>
+
+        <main id="solicitudes-pendientes-list">
+            <article class="solicitud-card" data-id="12345abc">
+                <div class="card-header">
+                    <h3>Téc: Juan Pérez</h3>
+                    <span class="status status-pendiente">Pendiente</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>OM:</strong> 10521</p>
+                    <p><strong>Monto:</strong> $75,000</p>
+                    <p><strong>Descripción:</strong> Reparación de motor en compresor 2...</p>
+                </div>
+            </article>
+            </main>
+    </div>
+
+    <div id="boss-detail-view" class="view hidden">
+        <header>
+            <h1>Detalle de Solicitud</h1>
+            <div class="user-info">
+                 <button id="back-to-main-view-btn">&lt; Volver</button>
+            </div>
+        </header>
+
+        <main id="solicitud-detail-content">
+            </main>
+        
+        <footer class="action-footer">
+            <div class="form-group reject-reason-group hidden">
+                <label for="motivoRechazo">Motivo del Rechazo (Opcional):</label>
+                <textarea id="motivoRechazo" rows="3"></textarea>
+            </div>
+            <div class="action-buttons">
+                <button id="reject-btn" class="reject-btn">Rechazar</button>
+                <button id="approve-btn" class="approve-btn">Aprobar</button>
+            </div>
+        </footer>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="js/jefe.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Sistema de Repuestos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+
+    <div class="login-container">
+        <h1>Crear Cuenta</h1>
+        <p>Registro de Nuevo Usuario</p>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="cin">CIN (Código de Identificación):</label>
+                <input type="number" id="cin" name="cin" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="rol">Rol:</label>
+                <select id="rol" name="rol" required>
+                    <option value="" disabled selected>-- Seleccione un rol --</option>
+                    <option value="Técnico">Técnico</option>
+                    <option value="Jefe">Jefe</option>
+                    <option value="Almacenista">Almacenista</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmarContrasena">Confirmar Contraseña:</label>
+                <input type="password" id="confirmarContrasena" name="confirmarContrasena" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Registrarse</button>
+            </div>
+            <p id="message" class="message-text"></p>
+        </form>
+        <hr>
+        <p class="register-link">¿Ya tienes una cuenta? <a href="index.html">Inicia sesión aquí</a></p>
+    </div>
+
+    <script src="js/register.js"></script>
+</body>
+</html>

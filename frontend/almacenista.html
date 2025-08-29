@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Almacén - Sistema de Repuestos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="warehouse-main-view" class="view">
+        <header>
+            <h1>Panel de Despachos</h1>
+            <div class="user-info">
+                <span>Usuario: <span id="user-name">Almacén</span></span>
+                <button id="logout-btn">Salir</button>
+            </div>
+        </header>
+
+        <section class="filter-container">
+             <h3>Filtrar por Estado:</h3>
+             <div class="filter-buttons">
+                 <button class="filter-btn active" data-status="Aprobada">Aprobadas</button>
+                 <button class="filter-btn" data-status="Despachado">Despachadas</button>
+                 <button class="filter-btn" data-status="">Todas</button>
+             </div>
+        </section>
+
+        <main id="solicitudes-list">
+            <article class="solicitud-card" data-id="12345abc">
+                <div class="card-header">
+                    <h3>OM: 10523</h3>
+                    <span class="status status-aprobada">Aprobada</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Téc:</strong> Ana García</p>
+                    <p><strong>Aprobado por:</strong> Carlos Rivas</p>
+                </div>
+            </article>
+            </main>
+    </div>
+
+    <div id="warehouse-dispatch-view" class="view hidden">
+        <header>
+            <h1>Confirmar Despacho</h1>
+            <div class="user-info">
+                 <button id="back-to-main-view-btn">&lt; Volver</button>
+            </div>
+        </header>
+
+        <main id="solicitud-detail-content">
+            </main>
+        
+        <footer class="action-footer">
+            <div class="form-group">
+                <label for="observacionDespacho">Observaciones de Despacho (Opcional):</label>
+                <textarea id="observacionDespacho" rows="3" placeholder="Ej: Se entregan 2 de 3 filtros..."></textarea>
+            </div>
+            <div class="action-buttons">
+                <button id="dispatch-btn" class="submit-btn">Confirmar Despacho</button>
+            </div>
+        </footer>
+    </div>
+     <script src="js/auth.js"></script>
+    <script src="js/almacenista.js"></script>
+</body>
+</html>

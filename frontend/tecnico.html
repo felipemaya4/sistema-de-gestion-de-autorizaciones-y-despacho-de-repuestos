@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Técnico - Sistema de Repuestos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="technician-main-view" class="view">
+        <header>
+            <h1>Sistema de Repuestos</h1>
+            <div class="user-info">
+                <span>Bienvenido, <span id="user-name">[Nombre Técnico]</span></span>
+                <button id="logout-btn">Salir</button>
+            </div>
+        </header>
+
+        <section class="search-container">
+            <input type="search" id="search-bar" placeholder="Buscar por Nº de OM o descripción...">
+        </section>
+
+        <main id="solicitudes-list">
+            <article class="solicitud-card">
+                <div class="card-header">
+                    <h3>OM: 10523</h3>
+                    <span class="status status-aprobada">Aprobada</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Monto:</strong> $150,000</p>
+                    <p><strong>Descripción:</strong> Cambio de filtros para unidad central.</p>
+                </div>
+            </article>
+
+            <article class="solicitud-card">
+                <div class="card-header">
+                    <h3>OM: 10521</h3>
+                    <span class="status status-pendiente">Pendiente</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Monto:</strong> $75,000</p>
+                    <p><strong>Descripción:</strong> Reparación de motor en compresor 2.</p>
+                </div>
+            </article>
+
+             <article class="solicitud-card">
+                <div class="card-header">
+                    <h3>OM: 10499</h3>
+                    <span class="status status-despachado">Despachado</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Monto:</strong> $220,000</p>
+                    <p><strong>Descripción:</strong> Compra de aceite y refrigerante.</p>
+                </div>
+            </article>
+
+        </main>
+        
+        <button id="show-new-request-form-btn" class="fab">+</button>
+    </div>
+
+    <div id="technician-new-request-view" class="view hidden">
+        <header>
+            <h1>Nueva Solicitud</h1>
+            <div class="user-info">
+                 <button id="back-to-main-view-btn">&lt; Volver</button>
+            </div>
+        </header>
+        
+        <main>
+            <form id="new-request-form">
+                <div class="form-group">
+                    <label for="numeroOM">Número de Orden de Mantenimiento:</label>
+                    <input type="number" id="numeroOM" name="numeroOM" required>
+                </div>
+                <div class="form-group">
+                    <label for="monto">Monto Total:</label>
+                    <input type="number" id="monto" name="monto" required>
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Trabajo:</label>
+                    <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jefeAsignado">Dirigir a Jefe:</label>
+                    <select id="jefeAsignado" name="jefeAsignado" required>
+                        <option value="">Cargando jefes...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Enviar Solicitud</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="js/tecnico.js"></script>
+
+</body>
+</html>
