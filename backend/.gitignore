@@ -1,0 +1,5 @@
+
+# Dependencias de Node.js
+
+# ignorar archivo .env
+.env
