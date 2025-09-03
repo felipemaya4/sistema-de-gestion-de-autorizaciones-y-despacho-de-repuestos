@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 inicializarSchema();
 
-//app.use(cors());
+app.use(cors());
 app.use(express.json());
 
 // Rutas de autenticación
