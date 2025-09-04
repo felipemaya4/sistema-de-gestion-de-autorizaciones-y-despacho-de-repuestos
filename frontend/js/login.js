@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
-    const API_BASE_URL = 'http://localhost:3000/api';
+    const API_BASE_URL = 'https://sistema-de-gestion-de-solicitud-de.onrender.com/api';
+    //const API_BASE_URL = 'https://sistema-de-gestion-de-solicitud-de.onrender.com/api';
 
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();

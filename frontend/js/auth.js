@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+//const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://sistema-de-gestion-de-solicitud-de.onrender.com/api';
+
 
 // --- Funciones de Ayuda ---
 const getToken = () => localStorage.getItem('authToken');
