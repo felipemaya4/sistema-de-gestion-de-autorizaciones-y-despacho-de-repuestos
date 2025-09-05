@@ -9,33 +9,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const userNameSpan = document.getElementById('user-name');
     const logoutBtn = document.getElementById('logout-btn');
     const jefeAsignadoSelect = document.getElementById('jefeAsignado');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchBar = document.getElementById('search-bar');
 
-    // --- 2. CONFIGURACIÓN Y AUTENTICACIÓN ---
+    // --- 2. ESTADO DE LA APLICACIÓN ---
     const user = getUserInfo();
     if (!user || user.rol !== 'Técnico') {
         logout();
     }
     userNameSpan.textContent = user.nombre;
+    let todasLasSolicitudes = []; // Guardaremos las solicitudes para la búsqueda local
 
-    // --- 3. FUNCIONES DE MANEJO DE VISTAS ---
+    // --- 3. MANEJO DE VISTAS ---
     const showMainView = () => {
         mainView.style.display = 'block';
         newRequestView.style.display = 'none';
     };
+
     const showNewRequestView = () => {
         mainView.style.display = 'none';
         newRequestView.style.display = 'block';
         cargarJefes();
     };
-    
-    // --- 4. FUNCIONES DE API ---
+
+    // --- 4. RENDERIZADO Y API ---
     const cargarJefes = async () => {
-        // ... (código para cargar jefes que ya implementamos)
         try {
             const response = await authFetch('/usuarios/jefes');
-            if (!response.ok) throw new Error('No se pudo cargar la lista de jefes.');
+            if (!response.ok) {
+                throw new Error('No se pudo cargar la lista de jefes.');
+            }
             const jefes = await response.json();
+
             jefeAsignadoSelect.innerHTML = '<option value="">-- Seleccione un jefe --</option>';
+
             jefes.forEach(jefe => {
                 const option = document.createElement('option');
                 option.value = jefe.cin;
@@ -48,49 +55,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const fetchAndRenderSolicitudes = async () => {
+    const renderSolicitudes = (solicitudes) => {
+        solicitudesListContainer.innerHTML = '';
+        if (solicitudes.length === 0) {
+            solicitudesListContainer.innerHTML = '<p>No se encontraron solicitudes que coincidan con los filtros.</p>';
+            return;
+        }
+
+        solicitudes.forEach(solicitud => {
+            const card = document.createElement('article');
+            card.className = 'solicitud-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3>OM: ${solicitud.numeroOM}</h3>
+                    <span class="status status-${solicitud.estado.toLowerCase()}">${solicitud.estado}</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Monto:</strong> $${new Intl.NumberFormat('es-CO').format(solicitud.monto)}</p>
+                    <p><strong>Descripción:</strong> ${solicitud.descripcion}</p>
+                    <p><strong>Fecha:</strong> ${new Date(solicitud.fechaCreacion).toLocaleDateString('es-CO')}</p>
+                </div>
+            `;
+            solicitudesListContainer.appendChild(card);
+        });
+    };
+
+    const fetchSolicitudes = async (status = '') => {
         solicitudesListContainer.innerHTML = '<p>Cargando solicitudes...</p>';
         try {
-            const response = await authFetch(`/solicitudes?rol=tecnico&id=${user.cin}`);
+            const response = await authFetch(`/solicitudes?rol=tecnico&id=${user.cin}&estado=${status}`);
             if (!response.ok) throw new Error('Error al cargar solicitudes.');
             
-            const solicitudes = await response.json();
-            solicitudesListContainer.innerHTML = '';
-
-            if (solicitudes.length === 0) {
-                solicitudesListContainer.innerHTML = '<p>No tienes solicitudes registradas.</p>';
-                return;
-            }
-
-            // --- INICIO DE LA CORRECCIÓN ---
-            solicitudes.forEach(solicitud => {
-                const card = document.createElement('article');
-                card.className = 'solicitud-card';
-
-                // Usamos un template literal (comillas invertidas ``) para construir el HTML
-                // con los datos reales de cada solicitud.
-                card.innerHTML = `
-                    <div class="card-header">
-                        <h3>OM: ${solicitud.numeroOM}</h3>
-                        <span class="status status-${solicitud.estado.toLowerCase()}">${solicitud.estado}</span>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Monto:</strong> $${new Intl.NumberFormat('es-CO').format(solicitud.monto)}</p>
-                        <p><strong>Descripción:</strong> ${solicitud.descripcion}</p>
-                        <p><strong>Fecha:</strong> ${new Date(solicitud.fechaCreacion).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                    </div>
-                `;
-                solicitudesListContainer.appendChild(card);
-            });
-            // --- FIN DE LA CORRECCIÓN ---
-
+            todasLasSolicitudes = await response.json();
+            renderSolicitudes(todasLasSolicitudes);
+            
         } catch (error) {
             solicitudesListContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
         }
     };
 
     const handleFormSubmit = async (event) => {
-        // ... (código de handleFormSubmit que ya implementamos)
         event.preventDefault();
         const formData = new FormData(newRequestForm);
         const data = Object.fromEntries(formData.entries());
@@ -104,14 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: JSON.stringify(data),
             });
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'No se pudo crear la solicitud.');
             }
+            
             alert('¡Solicitud creada con éxito!');
             newRequestForm.reset();
             showMainView();
-            fetchAndRenderSolicitudes();
+            fetchSolicitudes(''); // Recargamos todas las solicitudes
         } catch (error) {
             alert(`Error: ${error.message}`);
         }
@@ -123,7 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
     backToMainViewBtn.addEventListener('click', showMainView);
     newRequestForm.addEventListener('submit', handleFormSubmit);
 
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            searchBar.value = '';
+            const status = button.dataset.status;
+            fetchSolicitudes(status);
+        });
+    });
+
+    searchBar.addEventListener('input', () => {
+        const searchTerm = searchBar.value.toLowerCase();
+        
+        const solicitudesFiltradas = todasLasSolicitudes.filter(solicitud => {
+            const textoBusqueda = `
+                ${solicitud.numeroOM} 
+                ${solicitud.descripcion}`.toLowerCase();
+            return textoBusqueda.includes(searchTerm);
+        });
+        
+        renderSolicitudes(solicitudesFiltradas);
+    });
+
     // --- 6. INICIALIZACIÓN ---
     showMainView();
-    fetchAndRenderSolicitudes();
+    fetchSolicitudes(''); // Cargamos 'Todas' las solicitudes por defecto al iniciar
 });

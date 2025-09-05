@@ -88,6 +88,7 @@ const obtenerSolicitudesPorFiltro = async (filtros) => {
         args.push(filtros.estado);
     } 
     // Si no viene un estado específico, aplicamos las reglas por defecto para los roles
+    /** 
     else {
         if (filtros.rol === 'jefe') {
             whereClauses.push('estado = ?');
@@ -97,7 +98,7 @@ const obtenerSolicitudesPorFiltro = async (filtros) => {
             args.push('Aprobada');
         }
     }
-    
+    /**/
     // 3. Si se añadió alguna cláusula WHERE, la unimos a la consulta principal
     if (whereClauses.length > 0) {
         sql += ` WHERE ${whereClauses.join(' AND ')}`;

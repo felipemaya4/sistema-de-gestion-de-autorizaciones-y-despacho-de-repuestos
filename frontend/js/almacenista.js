@@ -11,25 +11,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const observacionTextarea = document.getElementById('observacionDespacho');
     const userNameSpan = document.getElementById('user-name');
     const logoutBtn = document.getElementById('logout-btn');
+    const searchBar = document.getElementById('search-bar');
 
-    // --- 2. CONFIGURACIÓN Y AUTENTICACIÓN ---
+    // --- 2. ESTADO DE LA APLICACIÓN ---
     const user = getUserInfo();
     if (!user || user.rol !== 'Almacenista') {
-        logout(); // Si no es Almacenista, se redirige al login.
+        logout();
     }
     userNameSpan.textContent = user.nombre;
     let currentSolicitudId = null;
-    let currentStatusFilter = 'Aprobada'; // El filtro por defecto
+    let todasLasSolicitudes = []; // Guardaremos las solicitudes para la búsqueda
+    let currentStatusFilter = 'Aprobada';
 
     // --- 3. MANEJO DE VISTAS ---
     const showMainView = () => {
-        mainView.classList.remove('hidden');
-        dispatchView.classList.add('hidden');
+        mainView.style.display = 'block';
+        dispatchView.style.display = 'none';
         currentSolicitudId = null;
     };
     const showDispatchView = () => {
-        mainView.classList.add('hidden');
-        dispatchView.classList.remove('hidden');
+        mainView.style.display = 'none';
+        dispatchView.style.display = 'block';
     };
 
     // --- 4. RENDERIZADO Y API ---
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSolicitudes = (solicitudes) => {
         solicitudesListContainer.innerHTML = '';
         if (solicitudes.length === 0) {
-            solicitudesListContainer.innerHTML = `<p>No hay solicitudes con el estado '${currentStatusFilter || 'Todos'}'.</p>`;
+            solicitudesListContainer.innerHTML = `<p>No se encontraron solicitudes que coincidan con los filtros.</p>`;
             return;
         }
 
@@ -45,10 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('article');
             card.className = 'solicitud-card';
             
-            // Hacemos que solo las tarjetas 'Aprobadas' sean interactivas para el despacho
             if (solicitud.estado === 'Aprobada') {
                 card.style.cursor = 'pointer';
-                // CORRECCIÓN APLICADA: Pasamos el objeto 'solicitud' completo
                 card.addEventListener('click', () => showDetailForDispatch(solicitud));
             }
 
@@ -66,11 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    // CORRECCIÓN APLICADA: La función ahora recibe el objeto completo, no necesita buscarlo
     const showDetailForDispatch = (solicitud) => {
         if (!solicitud) return;
         
-        // Usamos el campo 'id' correcto
         currentSolicitudId = solicitud.id;
         
         solicitudDetailContainer.innerHTML = `
@@ -84,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="full-description">${solicitud.descripcion}</p>
             </div>
         `;
-        observacionTextarea.value = ''; // Limpiamos el textarea para la nueva entrada
+        observacionTextarea.value = '';
         showDispatchView();
     };
 
@@ -99,8 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await authFetch(`/solicitudes?estado=${status}`);
             if (!response.ok) throw new Error('Error al obtener solicitudes.');
-            const solicitudes = await response.json();
-            renderSolicitudes(solicitudes);
+            
+            todasLasSolicitudes = await response.json();
+            renderSolicitudes(todasLasSolicitudes);
         } catch (error) {
             solicitudesListContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
         }
@@ -132,11 +131,32 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', logout);
     backToMainViewBtn.addEventListener('click', showMainView);
     dispatchBtn.addEventListener('click', handleDispatch);
+    
     filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => fetchSolicitudes(btn.dataset.status));
+        btn.addEventListener('click', () => {
+            searchBar.value = '';
+            fetchSolicitudes(btn.dataset.status);
+        });
     });
+
+    searchBar.addEventListener('input', () => {
+        const searchTerm = searchBar.value;
+
+        if (searchTerm === '') {
+            renderSolicitudes(todasLasSolicitudes);
+            return;
+        }
+
+        const solicitudesFiltradas = todasLasSolicitudes.filter(solicitud => {
+            const numeroOMComoString = String(solicitud.numeroOM);
+            return numeroOMComoString.includes(searchTerm);
+        });
+        
+        renderSolicitudes(solicitudesFiltradas);
+    });
+
 
     // --- 6. INICIALIZACIÓN ---
     showMainView();
-    fetchSolicitudes('Aprobada'); // La vista por defecto del almacenista
+    fetchSolicitudes('Aprobada');
 });
