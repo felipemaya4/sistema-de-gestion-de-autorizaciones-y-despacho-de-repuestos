@@ -3,6 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error-message');
     const API_BASE_URL = 'https://sistema-de-gestion-de-solicitud-de.onrender.com/api';
     //const API_BASE_URL = 'https://sistema-de-gestion-de-solicitud-de.onrender.com/api';
+    const loadingModal = document.getElementById('loading-modal');
+
+    function showLoading() {
+        if (loadingModal) {
+            loadingModal.classList.remove('hidden');
+            loadingModal.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    function hideLoading() {
+        if (loadingModal) {
+            loadingModal.classList.add('hidden');
+            loadingModal.setAttribute('aria-hidden', 'true');
+        }
+    }
 
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -11,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(loginForm);
         const data = Object.fromEntries(formData.entries());
 
+        showLoading();
         try {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
@@ -45,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             errorMessage.textContent = error.message;
+        } finally {
+            // Ocultamos el modal (si la página se redirige, esto no hace daño)
+            hideLoading();
         }
     });
 });
